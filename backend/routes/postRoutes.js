@@ -1,9 +1,9 @@
     const express = require("express");
     const router = express.Router();
     const Post = require("../models/Post");
-    const upload = require("../middleware/upload"); // ✅ only one
+    const upload = require("../middleware/upload"); // 
     const cloudinary = require("../config/cloudinary");
-    const streamifier = require("streamifier"); // ✅ added
+    const streamifier = require("streamifier"); // 
 
     // GET posts
     router.get("/", async (req, res) => {
@@ -51,9 +51,25 @@
     });
 
     // DELETE
-    router.delete("/:id", async (req, res) => {
-    await Post.findByIdAndDelete(req.params.id);
-    res.json({ message: "Deleted" });
+    // router.delete("/posts/:id", async (req, res) => {
+    // await Post.findByIdAndDelete(req.params.id);
+    // res.json({ message: "Deleted" });
+    // });
+
+        router.delete("/:id", async (req, res) => {
+            console.log("delete hit");
+
+    try {
+        const deleted = await Post.findByIdAndDelete(req.params.id);
+
+        if (!deleted) {
+        return res.status(404).json({ message: "Post not found" });
+        }
+
+        res.json({ message: "Post deleted" });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
     });
 
     module.exports = router;
