@@ -42,11 +42,11 @@ function CreatePost({ onPostCreated }) {
     if (image) formData.append("image", image);
 
     try {
-        const token = localStorage.getItem("adminToken"); // ← YE ADD KARO
+        const token = localStorage.getItem("adminToken");
 
-        const res = await axios.post("http://localhost:5000/api/posts", formData, {
+        const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/posts`, formData, {
             headers: {
-                Authorization: `Bearer ${token}`, // ← AUR YE
+                Authorization: `Bearer ${token}`, 
             },
         });
         onPostCreated(res.data);

@@ -2,10 +2,11 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 
+const API = import.meta.env.VITE_API_URL;
+
 function EditPost() {
     const { id } = useParams();
     const navigate = useNavigate();
-
     const [username, setUsername] = useState("");
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
@@ -20,7 +21,7 @@ function EditPost() {
     };
 
     useEffect(() => {
-        axios.get(`http://localhost:5000/api/posts/${id}`)
+        axios.get(`${API}/api/posts/${id}`)
             .then(res => {
                 const post = res.data;
                 setUsername(post.username || "");
@@ -28,7 +29,7 @@ function EditPost() {
                 setContent(post.content);
                 setLoading(false);
             })
-            .catch(err => {
+            .catch(() => {
                 showToast("Failed to load post");
                 setLoading(false);
             });
@@ -49,7 +50,7 @@ function EditPost() {
             formData.append("content", content);
             if (image) formData.append("image", image);
 
-            await axios.put(`http://localhost:5000/api/posts/${id}`, formData, {
+            await axios.put(`${API}/api/posts/${id}`, formData, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             showToast("Post updated successfully!", "success");
@@ -58,7 +59,7 @@ function EditPost() {
             const status = err.response?.status;
             const messages = {
                 401: "Session expired — please log in again",
-                403: "You are not authorized to edit this post",
+                403: "Not authorized to edit this post",
                 500: "Server error — please try again",
             };
             showToast(messages[status] ?? "Edit failed — check your connection");
@@ -71,8 +72,6 @@ function EditPost() {
 
     return (
         <div className="container">
-
-            {/* Toast */}
             {toast && (
                 <div style={{
                     position: "fixed", top: 20, right: 20, zIndex: 999,
@@ -87,30 +86,15 @@ function EditPost() {
                     {toast.msg}
                 </div>
             )}
-
             <div className="edit-card">
                 <h2>Edit Post</h2>
                 <form onSubmit={handleSubmit}>
-                    <input
-                        type="text"
-                        placeholder="Username"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                        className="edit-input"
-                    />
-                    <input
-                        type="text"
-                        placeholder="Title"
-                        value={title}
-                        onChange={(e) => setTitle(e.target.value)}
-                        className="edit-input"
-                    />
-                    <textarea
-                        placeholder="Content"
-                        value={content}
-                        onChange={(e) => setContent(e.target.value)}
-                        className="edit-textarea"
-                    />
+                    <input type="text" placeholder="Username" value={username}
+                        onChange={(e) => setUsername(e.target.value)} className="edit-input" />
+                    <input type="text" placeholder="Title" value={title}
+                        onChange={(e) => setTitle(e.target.value)} className="edit-input" />
+                    <textarea placeholder="Content" value={content}
+                        onChange={(e) => setContent(e.target.value)} className="edit-textarea" />
                     <label style={{
                         display: "flex", alignItems: "center", gap: 10,
                         padding: "9px 12px", border: "1.5px dashed #ddd",
@@ -119,27 +103,16 @@ function EditPost() {
                     }}>
                         <span>📎</span>
                         <span>{image ? image.name : "Replace image (optional)"}</span>
-                        <input
-                            type="file"
-                            accept="image/jpeg,image/png,image/webp"
+                        <input type="file" accept="image/jpeg,image/png,image/webp"
                             onChange={(e) => setImage(e.target.files[0])}
-                            style={{ display: "none" }}
-                        />
+                            style={{ display: "none" }} />
                     </label>
                     <div className="edit-actions">
-                        <button
-                            type="submit"
-                            className="save-btn"
-                            disabled={saving}
-                            style={{ opacity: saving ? 0.7 : 1, cursor: saving ? "not-allowed" : "pointer" }}
-                        >
+                        <button type="submit" className="save-btn" disabled={saving}
+                            style={{ opacity: saving ? 0.7 : 1, cursor: saving ? "not-allowed" : "pointer" }}>
                             {saving ? "Saving..." : "Save Changes"}
                         </button>
-                        <button
-                            type="button"
-                            className="cancel-btn"
-                            onClick={() => navigate("/posts")}
-                        >
+                        <button type="button" className="cancel-btn" onClick={() => navigate("/posts")}>
                             Cancel
                         </button>
                     </div>
