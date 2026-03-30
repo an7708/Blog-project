@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 
-function PostList({ refreshFlag }) {
+function PostList() {
     const [posts, setPosts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
+    const navigate = useNavigate();
 
     const fetchPosts = async () => {
         try {
@@ -21,10 +23,9 @@ function PostList({ refreshFlag }) {
 
     useEffect(() => {
         fetchPosts();
-    }, [refreshFlag]);
+    }, []);
 
     const handleDelete = async (id) => {
-        console.log("handleDelete called, id =", id);
         try {
             await axios.delete(`http://localhost:5000/api/posts/${id}`);
             setPosts((prev) => prev.filter((post) => post._id !== id));
@@ -34,37 +35,38 @@ function PostList({ refreshFlag }) {
         }
     };
 
-    if (loading) return <p>Loading...</p>;
+    if (loading) return <p className="loading">Loading...</p>;
     if (error) return <p>{error}</p>;
 
     return (
-        <div>
-            <h2>Blog Posts</h2>
+        <div className="container">
+            <div className="all-posts-header">
+                <h1>All Posts</h1>
+                <Link to="/" className="see-all-btn">← Back to Home</Link>
+            </div>
 
-            {posts.length === 0 ? (
-                <p>No posts available</p>
-            ) : (
-                posts.map((post) => {
-                    return (
-                        <div key={post._id}>
-                            <h3>{post.title}</h3>
-                            <p>{post.content}</p>
-
-                            {post.image && (
-                                <img
-                                    src={post.image}
-                                    alt="post"
-                                    width="200"
-                                />
-                            )}
-
-                            <button onClick={() => handleDelete(post._id)}>
-                                Delete
-                            </button>
+            <div className="posts">
+                {posts.length === 0 ? (
+                    <p>No posts available</p>
+                ) : (
+                    posts.map((post) => (
+                        //<div className="post" key={post._id}>
+                        <div className="post" key={post._id} onClick={() => navigate(`/post/${post._id}`)} style={{ cursor: "pointer" }}>
+                            {post.image && <img src={post.image} alt="post" />}
+                            <div className="post-content">
+                                <div className="post-date">{new Date(post.createdAt).toDateString()}</div>
+                                <div className="post-username">Created by {post.username || "Anonymous"}</div>
+                                <h3>{post.title}</h3>
+                                <p>{post.content}</p>
+                                <div className="post-actions">
+                                    <button className="delete-btn" onClick={(e) => { e.stopPropagation(); handleDelete(post._id); }}>Delete</button>
+                                    <button className="edit-btn" onClick={(e) => { e.stopPropagation(); navigate(`/edit/${post._id}`); }}>Edit</button>
+                                </div>
+                            </div>
                         </div>
-                    );
-                })
-            )}
+                    ))
+                )}
+            </div>
         </div>
     );
 }
