@@ -7,7 +7,10 @@ const app = express();
 
 connectDB();
 
-app.use(cors());
+app.use(cors({
+    origin: ["https://blogproject98669.vercel.app", "http://localhost:5173"],
+    credentials: true
+}));
 app.use(express.json());
 
 // Routes
