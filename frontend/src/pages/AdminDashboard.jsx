@@ -18,7 +18,7 @@ function AdminDashboard() {
 
     const fetchPosts = async () => {
         try {
-            const res = await axios.get("http://localhost:5000/api/posts");
+            const res = await axios.get("https://blog-project-afuu.onrender.com/api/posts");
             setPosts(res.data);
         } catch (error) {
             console.log(error);
@@ -27,7 +27,7 @@ function AdminDashboard() {
 
     const handleDelete = async (id) => {
         try {
-            await axios.delete(`http://localhost:5000/api/posts/${id}`, {
+            await axios.delete(`https://blog-project-afuu.onrender.com/api/posts/${id}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setPosts((prev) => prev.filter((post) => post._id !== id));

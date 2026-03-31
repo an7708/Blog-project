@@ -203,7 +203,7 @@ export default CreatePost;
 //         if (image) formData.append("image", image);
 
 //         try {
-//             const res = await axios.post("http://localhost:5000/api/posts", formData);
+//             const res = await axios.post("https://blog-project-afuu.onrender.com/api/posts", formData);
 //             onPostCreated(res.data);
 //             setUsername("");
 //             setTitle("");
